@@ -4,11 +4,14 @@ const cookieParser = require('cookie-parser');
 const session = require("express-session");
 const mongoose = require('mongoose').set('debug',true);
 const credentials = require('./config/credentials.js');
+// const { parse } = require('url')
 
 const dev = process.env.NODE_ENV !== 'production'
 const nextApp = next({ dev })
 const handle = nextApp.getRequestHandler()
 
+const Product = require('./models/Product');
+const Cart = require('./models/Cart');
 nextApp.prepare()
 .then(() => {
   const app = express();
@@ -25,8 +28,41 @@ nextApp.prepare()
     	// cookie : { secure : true}
   }));
 
-//route to /shops
+
+  app.get('/shops/:id', (req, res) => {
+    // const { pathname, query } = parse(req.url, true)
+    Product.findById(req.params.id, (err, product )=>{
+      // console.log();
+   const query = { id: req.params.id}
+      return nextApp.render(req, res, '/view', query);
+
+    })
+
+  })
+  app.get('/carts', (req, res) => {
+    let user = "1234567890";
+    Cart.find({ user, status:"uncomplete"}).populate('product').exec( (err, carts)=>{
+      if(carts.length > 0){
+        req.carts = carts;
+        const query = { id: user}
+        return nextApp.render(req, res, '/carts', query);
+        // return res.json({status: "failed", msg:"already exist"});
+      }
+    })
+  })
+
+  app.get('/shops', (req, res) => {
+    const query = { id: null}
+    return nextApp.render(req, res, '/shops', query);
+  })
+
+  //route to /shops
   app.use('/api/shops', require('./routes/shops'))
+  app.use('/shops', require('./routes/shops'));
+
+  app.use('/api/carts', require('./routes/carts'));
+
+
 
   app.get('*', (req, res) => {
     return handle(req, res)

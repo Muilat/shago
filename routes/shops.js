@@ -5,7 +5,6 @@ const Size = require('../models/Size')
 
 router.get('/', (req, res) => {
 
-  console.log(req.query.sizes);
 
   let reference = req.query.reference;
   let min_price = parseInt(req.query.min_price);
@@ -77,27 +76,16 @@ router.get('/', (req, res) => {
       })
   });
 
-// router.use('/:id', (req, res, next) => {
-//     console.log(req.params.id)
-//     Photos.findById(req.params.id, (err, photo) => {
-//         if(err)
-//             res.status(500).send(err)
-//         else
-//             req.photo = photo
-//             next()
-//     })
-// })
-// router
-//     .get('/:id', (req, res) => {
-//         return res.json( req.photo )
-//     })
-//     .put('/:id', (req, res) =>{
-//         Object.keys(req.body).map(key=>{
-//             req.photo[key] = req.body[key]
-//         })
-//         req.photo.save()
-//         res.json(req.photo)
-//     })
+
+
+router.get('/:id', (req, res) => {
+  Product.findById(req.params.id).populate('sizes').exec((err, product )=>{
+    return res.json(product);
+
+  })
+
+})
+
 
 
 module.exports = router;

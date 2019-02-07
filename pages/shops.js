@@ -104,7 +104,6 @@ class Shops extends Component {
          sizes.push(data[i]._id);
        }
           await this.setState({ sizes });
-        console.log("state "+this.state.sizes);
     }
     this.fetchData();
 
@@ -123,10 +122,6 @@ class Shops extends Component {
         await this.setState({ sizes });
     }
     this.fetchData();
-
-
-
-
   }
 
   render() {
